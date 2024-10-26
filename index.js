@@ -1,32 +1,27 @@
+// setup express server and connect to MongoDB
 const express = require("express");
 const app = express();
-const mongoose = require("mongoose");
-const Product = require("./models/product.model.js");
+const connectDB = require("./config/database.js");
 const productRoutes = require("./routes/product.route.js");
-//connect to MongoDB
-mongoose
-  .connect(
-    "mongodb+srv://hoanganhphan2k:abcd1234@backenddb.ueiuh.mongodb.net/Node-API?retryWrites=true&w=majority&appName=BackendDB"
-  )
-  .then(() => {
-    console.log("Connected to MongoDB");
-    app.listen(5000, () => {
-      console.log("Server is running on port 5000");
-    });
-  })
-  .catch((err) => {
-    console.log("Error: ", err);
-  });
+const userRoutes = require("./routes/auth.route.js");
+const cookieParser = require("cookie-parser");
 
+connectDB();
+
+app.listen(5000, () => {
+  console.log("Server is running on port 5000");
+});
 // Middleware
 // Allow express to use JSON data
 app.use(express.json());
-
 app.use(express.urlencoded({ extended: false }));
+// parse cookies associated with the client request objects
+app.use(cookieParser());
 //Route
 app.use("/api/products", productRoutes);
+app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
-  //Response message from browser
+  //Response message from browser to check connection
   res.send("Hello from Node API Server");
 });
